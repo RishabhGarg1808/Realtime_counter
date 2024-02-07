@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Realtime Object Counter"
 include(":app")
- 
+include(":tensorflow_yolov8")
