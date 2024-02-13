@@ -37,6 +37,7 @@ dependencies {
     implementation ("org.tensorflow:tensorflow-lite:2.10.0")
     implementation ("org.tensorflow:tensorflow-lite-gpu:2.10.0")
     implementation ("org.tensorflow:tensorflow-lite-gpu-api:2.12.0")
+    implementation ("org.tensorflow:tensorflow-lite-support:0.4.3")
     implementation("com.google.android.material:material:1.11.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
