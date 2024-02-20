@@ -22,11 +22,11 @@ public class Yolov8Classfier {
      boolean isNNAPI = false;
      boolean isGPU = false;
      boolean isQuantized = false;
-     int NUM_THREADS = 4;
+     int NUM_THREADS = 8;
      AssetManager assetManager = null;
      String modelFilename ;
      String labelFilename = "labels.txt";
-     int inputSize ;
+     int inputSize;
      Interpreter tfLite = null;
     private MappedByteBuffer tfliteModel;
 
@@ -65,17 +65,19 @@ public class Yolov8Classfier {
                 }
             }
             if (isGPU) {
-                Log.d("Yolov8Classfier", "++++++++++++++++++++++++++++++create: Trying to create GPU Delegate +++++++++++++++++++++++++++++++++++++++++");
+                Log.d("Yolov8Classifier", "++++++++++++++++++++++++++++++create: Trying to create GPU Delegate +++++++++++++++++++++++++++++++++++++++++");
                 GpuDelegate.Options delegateOptions = compatList.getBestOptionsForThisDevice();
                 delegateOptions.setInferencePreference(GpuDelegate.Options.INFERENCE_PREFERENCE_SUSTAINED_SPEED);
+                delegateOptions.setQuantizedModelsAllowed(true);
                 this.gpuDelegate = new GpuDelegate(delegateOptions);
                 options.addDelegate(this.gpuDelegate);
             }
+
             this.tfliteModel = Utils.loadModelFile(assetManager, modelFilename);
             this.tfLite = new Interpreter(this.tfliteModel, options);
 
             if(this.tfLite == null){
-                Log.d("Yolov8Classfier", "create: tfLite is null");
+                Log.d("Yolov8Classifier", "create: tfLite is null");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -133,8 +135,9 @@ public class Yolov8Classfier {
             YoloDetect yolodetect = new YoloDetect(this.tfLite, Utils.readLabels(assetManager, labelFilename),inputSize,this);
             Log.d("Yolov8Classfier", "detect: Input image shape: " + yolodetect.convertBitmapToByteBuffer(Utils.processBitmap(bitmap, inputSize)).capacity() );
             yolodetect.get_input_shape();
+            yolodetect.getOutputShape();
             yolodetect.detect(Utils.processBitmap(bitmap, inputSize));
-            //yolodetect.debug();
+            yolodetect.debug();
         }else{
             if (labelFilename == null) {
                 Log.d("Yolov8Classfier", "detect: labelFilename is null");
