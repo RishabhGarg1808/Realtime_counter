@@ -53,7 +53,7 @@ public class Yolov8Classfier {
 
         try {
             Interpreter.Options options = (new Interpreter.Options());
-            options.setNumThreads(NUM_THREADS);
+
             if (isNNAPI) {
                 this.nnapiDelegate = null;
                 // Initialize interpreter with NNAPI delegate for Android Pie or above
@@ -71,6 +71,8 @@ public class Yolov8Classfier {
                 delegateOptions.setQuantizedModelsAllowed(true);
                 this.gpuDelegate = new GpuDelegate(delegateOptions);
                 options.addDelegate(this.gpuDelegate);
+            }else{
+                options.setNumThreads(NUM_THREADS);
             }
 
             this.tfliteModel = Utils.loadModelFile(assetManager, modelFilename);
@@ -84,7 +86,7 @@ public class Yolov8Classfier {
         }
 
         if(this.isQuantized){
-            numBytesPerChannel = 4;
+            numBytesPerChannel = 1;
             Log.d("Yolov8Classfier", "create: Model is quantized");
             Tensor inpten = this.tfLite.getInputTensor(0);
             this.inp_scale = inpten.quantizationParams().getScale();
@@ -129,15 +131,40 @@ public class Yolov8Classfier {
         }
     }
 
+    private long startTime;
+    private int frameCount;
+
+    public void startFPSCounter() {
+        startTime = System.currentTimeMillis();
+        frameCount = 0;
+    }
+
+    public void incrementFrameCount() {
+        frameCount++;
+    }
+
+    private long lastFPSTime;
+    private float lastFPS;
+
+    public float getFPS() {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastFPSTime >= 1000) {
+            long elapsedTime = currentTime - startTime;
+            lastFPS = (float)frameCount / (elapsedTime / 1000f);
+            lastFPSTime = currentTime;
+        }
+        return Math.round(lastFPS * 100.0) / 100.0f;
+    }
     public void detect(Bitmap bitmap){
-        //TensorImage image = Utils.img_process(bitmap, inputSize);
+
         if (labelFilename !=null && this.tfLite != null) {
             YoloDetect yolodetect = new YoloDetect(this.tfLite, Utils.readLabels(assetManager, labelFilename),inputSize,this);
-            Log.d("Yolov8Classfier", "detect: Input image shape: " + yolodetect.convertBitmapToByteBuffer(Utils.processBitmap(bitmap, inputSize)).capacity() );
-            yolodetect.get_input_shape();
-            yolodetect.getOutputShape();
-            yolodetect.detect(Utils.processBitmap(bitmap, inputSize));
-            yolodetect.debug();
+            if (frameCount == 0) {
+                // Start the FPS counter only once when the detection starts
+                startFPSCounter();
+            }
+            yolodetect.detect(Utils.img_process(bitmap, inputSize));
+            incrementFrameCount();
         }else{
             if (labelFilename == null) {
                 Log.d("Yolov8Classfier", "detect: labelFilename is null");

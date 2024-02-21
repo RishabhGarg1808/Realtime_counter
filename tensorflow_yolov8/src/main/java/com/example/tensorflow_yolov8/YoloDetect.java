@@ -4,7 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.util.Log;
 
+import com.example.tensorflow_yolov8.Utils.Utils;
+
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.support.image.TensorImage;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -23,14 +26,13 @@ public class YoloDetect {
     private final ByteBuffer imgData;
     private final int[] intValues ;
     private final Map<Integer, Object> outputBuffer = new HashMap<>();
-
     private final float inp_scale;
     private final int inp_zero_point;
     Map<Integer, Object> output_Buffer_float = new HashMap<>();
-    boolean isQuantized = false;
-    float[][][] Array_def = new float[1][84][4116];
+    boolean isQuantized;
+    byte[][][] Array_def = new byte[1][84][3024];
 
-    public YoloDetect(Interpreter tfLite, List<String> labels, int size,Yolov8Classfier d) {
+    public YoloDetect(Interpreter tfLite, List<String> labels, int size,Yolov8Classfier d){
         this.tfLite = tfLite;
         this.labels = labels;
         this.size = size;
@@ -77,6 +79,10 @@ public class YoloDetect {
         tfLite.runForMultipleInputsOutputs(new Object[]{convertBitmapToByteBuffer(image)}, output_Buffer_float);
         getPredictions();
     }
+    public void detect(TensorImage image){
+        tfLite.runForMultipleInputsOutputs(new Object[]{image.getBuffer()}, output_Buffer_float);
+        getPredictions();
+    }
     public void get_input_shape(){
         int[] inputShape = tfLite.getInputTensor(0).shape();
         Log.d("YoloDetect", "Input shape: " + Arrays.toString(inputShape));
@@ -96,6 +102,8 @@ public class YoloDetect {
 //        Log.d("YoloDetect", "locations: " + locations);
 //        Log.d("YoloDetect", "labelIndices: " + labelIndices);
 //        Log.d("YoloDetect", "scores: " + scores);
+        this.get_input_shape();
+        this.getOutputShape();
     }
 
     public static class DetectedItem {

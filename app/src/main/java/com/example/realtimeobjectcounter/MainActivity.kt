@@ -41,13 +41,15 @@ class MainActivity : AppCompatActivity() {
             yolov8.useGPU(true)
             yolov8.useNNAPI(true)
             yolov8.setQuantized(true)
-            yolov8.create(assetManager, "yolov8n_integer_quant.tflite", "labels.txt",
-                448, 4)
+            yolov8.create(assetManager, "yolov8n_full_integer_quant.tflite", "labels.txt",
+                384, 4)
 
             var bitmap : Bitmap
             var image : TensorImage;
             val texView = findViewById<TextureView>(R.id.textureView)
             var imgView = findViewById<ImageView>(R.id.imageView)
+            val button = findViewById<android.widget.Button>(R.id.button)
+            //button.isEnabled=false;
 
             val cameraManager: CameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
             val cameraHandler = CameraHandler(1,cameraManager, texView)
@@ -55,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
             val workerThread = HandlerThread("workerThread").apply { start() }
             val workerHandler = Handler(workerThread.looper)
+
 
             texView.surfaceTextureListener = object :TextureView.SurfaceTextureListener{
                 override fun onSurfaceTextureAvailable(
@@ -79,8 +82,11 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
                     workerHandler.post {
-                        bitmap = texView.bitmap!!
-                        yolov8.detect(bitmap)
+                    bitmap = texView.bitmap!!
+                    yolov8.detect(bitmap)
+                }
+                    runOnUiThread {
+                    button.setText("FPS : ${yolov8.getFPS()}")
                     }
                 }
 

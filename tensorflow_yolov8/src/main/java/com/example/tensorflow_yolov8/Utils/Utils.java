@@ -59,14 +59,10 @@ public class Utils {
     public static TensorImage img_process(Bitmap bitmap, int size){
         TensorImage image = new TensorImage(DataType.UINT8);
         image.load(bitmap);
-        Log.d("YoloDetect", "Resizing image to " + size + "x" + size + " with NEAREST_NEIGHBOR.");
         ImageProcessor imageProcessor = new ImageProcessor.Builder()
                 .add(new ResizeOp(size, size, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
                 .build();
         image = imageProcessor.process(image);
-
-        ColorSpaceType img_spctype = image.getColorSpaceType();
-        Log.d("YoloDetect", "Image colorSpcae type : " + img_spctype);
         return image;
     }
     /**
@@ -146,17 +142,5 @@ public class Utils {
         canvas.drawBitmap(source, frameToCropTransformations, null);
 
         return croppedBitmap;
-    }
-
-    public static Bitmap processImage(int size, Bitmap bitmap) {
-        ImageProcessor imageProcessor =
-                new ImageProcessor.Builder()
-                        .add(new ResizeOp(size, size, ResizeOp.ResizeMethod.BILINEAR))
-                        .build();
-
-        TensorImage tensorImage = new TensorImage(DataType.UINT8);
-        tensorImage.load(bitmap);
-        tensorImage = imageProcessor.process(tensorImage);
-        return tensorImage.getBitmap();
     }
 }
