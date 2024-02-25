@@ -120,6 +120,7 @@ public class Yolov8Classfier {
         if (tfLite != null) {
             tfLite.close();
             tfLite = null;
+
         }
         if (gpuDelegate != null) {
             gpuDelegate.close();
