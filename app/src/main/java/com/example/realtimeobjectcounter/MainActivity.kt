@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.view.TextureView
 import android.widget.ImageView
 import android.widget.Toast
@@ -27,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         yolov8.close()
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
         if(checkPermission()){
@@ -40,16 +40,15 @@ class MainActivity : AppCompatActivity() {
             yolov8.setNUM_THREADS(8)
             yolov8.useGPU(true)
             yolov8.useNNAPI(true)
-            yolov8.setQuantized(true)
-            yolov8.create(assetManager, "yolov8n_full_integer_quant.tflite", "labels.txt",
-                384, 4)
+            yolov8.setQuantized(false)
+            yolov8.create(assetManager, "ssd.tflite", "labels.txt",
+                300, 8)
 
             var bitmap : Bitmap
             var image : TensorImage;
             val texView = findViewById<TextureView>(R.id.textureView)
             var imgView = findViewById<ImageView>(R.id.imageView)
             val button = findViewById<android.widget.Button>(R.id.button)
-            //button.isEnabled=false;
 
             val cameraManager: CameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
             val cameraHandler = CameraHandler(1,cameraManager, texView)
@@ -83,7 +82,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
                     workerHandler.post {
                     bitmap = texView.bitmap!!
-                    yolov8.detect(bitmap)
+                    val detectedItems = yolov8.detect(bitmap)
+                        for (item in detectedItems) {
+                            Log.d("DetectedItem", "Label: ${item.label}, Score: ${item.confidence}, BoundingBox: ${item.location}")
+                        }
                 }
                     runOnUiThread {
                     button.setText("FPS : ${yolov8.getFPS()}")

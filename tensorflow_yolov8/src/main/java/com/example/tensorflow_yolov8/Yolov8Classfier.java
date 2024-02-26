@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.tensorflow_yolov8.Utils.DetectedItem;
 import com.example.tensorflow_yolov8.Utils.Utils;
 
 import org.tensorflow.lite.Interpreter;
@@ -16,6 +17,7 @@ import org.tensorflow.lite.support.image.ImageProcessor;
 import org.tensorflow.lite.support.image.TensorImage;
 
 import java.nio.MappedByteBuffer;
+import java.util.List;
 
 public class Yolov8Classfier {
      CompatibilityList compatList = new CompatibilityList();
@@ -53,7 +55,7 @@ public class Yolov8Classfier {
 
         try {
             Interpreter.Options options = (new Interpreter.Options());
-
+            //options.setNumThreads(NUM_THREADS);
             if (isNNAPI) {
                 this.nnapiDelegate = null;
                 // Initialize interpreter with NNAPI delegate for Android Pie or above
@@ -156,16 +158,20 @@ public class Yolov8Classfier {
         }
         return Math.round(lastFPS * 100.0) / 100.0f;
     }
-    public void detect(Bitmap bitmap){
+    public List<DetectedItem> detect(Bitmap bitmap){
 
+        List<DetectedItem> detectedItems = null;
         if (labelFilename !=null && this.tfLite != null) {
             YoloDetect yolodetect = new YoloDetect(this.tfLite, Utils.readLabels(assetManager, labelFilename),inputSize,this);
             if (frameCount == 0) {
                 // Start the FPS counter only once when the detection starts
                 startFPSCounter();
             }
-            yolodetect.detect(Utils.img_process(bitmap, inputSize));
+            //yolodetect.debug();
+            //yolodetect.detect(Utils.processBitmap(bitmap, inputSize));
+            detectedItems = yolodetect.detect(Utils.img_process(bitmap, inputSize));
             incrementFrameCount();
+            return detectedItems;
         }else{
             if (labelFilename == null) {
                 Log.d("Yolov8Classfier", "detect: labelFilename is null");
@@ -174,6 +180,7 @@ public class Yolov8Classfier {
                 Log.d("Yolov8Classfier", "detect: tfLite is null");
             }
         }
+        return detectedItems;
     }
 
 }
