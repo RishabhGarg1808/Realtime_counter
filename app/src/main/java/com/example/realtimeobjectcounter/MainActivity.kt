@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.TextureView
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -19,7 +18,6 @@ import com.example.objcounter.CameraHandler
 import com.example.realtimeobjectcounter.utils.Rectangle_ImgView
 
 import com.example.tensorflow_yolov8.Yolov8Classfier
-import org.tensorflow.lite.support.image.TensorImage
 
 class MainActivity : AppCompatActivity() {
     private lateinit var canvas: Canvas
@@ -44,18 +42,10 @@ class MainActivity : AppCompatActivity() {
                 384, 32)
 
             var bitmap : Bitmap
-            var image : TensorImage;
             val texView = findViewById<TextureView>(R.id.textureView)
             val imgview : Rectangle_ImgView = findViewById(R.id.imageView)
-            val button = findViewById<android.widget.Button>(R.id.button)
-
-
-            //val bitmap_imgView = Bitmap.createBitmap(imgView.width, imgView.height, Bitmap.Config.ARGB_8888)
-            //canvas = Canvas(bitmap_imgView)
-//            val paint = Paint()
-//            paint.color = Color.RED
-//            paint.style = Paint.Style.STROKE
-            //paint.strokeWidth = 100f
+            val fps_button = findViewById<android.widget.Button>(R.id.button)
+            val count_text = findViewById<android.widget.TextView>(R.id.textView)
 
             val cameraManager: CameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
             val cameraHandler = CameraHandler(0,cameraManager, texView)
@@ -91,7 +81,8 @@ class MainActivity : AppCompatActivity() {
                        bitmap = texView.bitmap!!
                        val Bbox : MutableList<com.example.tensorflow_yolov8.Utils.BoundingBox>? = yolov8.detect(bitmap)
                         runOnUiThread {
-                            button.setText("FPS : ${yolov8.getFPS()}")
+                            fps_button.setText("${yolov8.getFPS()}")
+                            count_text.setText("Count : ${Bbox?.size}")
                             imgview.setRectangles(Bbox as List<com.example.tensorflow_yolov8.Utils.BoundingBox>)
                         }
                 }

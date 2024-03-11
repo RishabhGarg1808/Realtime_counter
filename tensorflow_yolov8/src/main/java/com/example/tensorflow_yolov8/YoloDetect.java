@@ -47,8 +47,8 @@ public class YoloDetect {
     private List<BoundingBox> Box;
     int numElements = 3024;
     int numChannel = 84;
-    float CONFIDENCE_THRESHOLD = 0.5f;
-    float IOU_THRESHOLD =0.5f;
+    float CONFIDENCE_THRESHOLD = 0.75f;
+    float IOU_THRESHOLD =0.75f;
     int image_width =0;
     int image_height =0;
 
