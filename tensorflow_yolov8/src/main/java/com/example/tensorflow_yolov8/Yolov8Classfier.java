@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 
-import com.example.tensorflow_yolov8.Utils.DetectedItem;
+import com.example.tensorflow_yolov8.Utils.BoundingBox;
 import com.example.tensorflow_yolov8.Utils.Utils;
 
 import org.tensorflow.lite.Interpreter;
@@ -13,8 +13,6 @@ import org.tensorflow.lite.Tensor;
 import org.tensorflow.lite.gpu.CompatibilityList;
 import org.tensorflow.lite.gpu.GpuDelegate;
 import org.tensorflow.lite.nnapi.NnApiDelegate;
-import org.tensorflow.lite.support.image.ImageProcessor;
-import org.tensorflow.lite.support.image.TensorImage;
 
 import java.nio.MappedByteBuffer;
 import java.util.List;
@@ -42,8 +40,9 @@ public class Yolov8Classfier {
      int inp_zero_point;
     float oup_scale;
     int oup_zero_point;
-
     int numBytesPerChannel ;
+    Bitmap bitmap;
+
     public Yolov8Classfier() {
     }
 
@@ -58,18 +57,18 @@ public class Yolov8Classfier {
             //options.setNumThreads(NUM_THREADS);
             if (isNNAPI) {
                 this.nnapiDelegate = null;
-                // Initialize interpreter with NNAPI delegate for Android Pie or above
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     this.nnapiDelegate = new NnApiDelegate();
-                    options.addDelegate(this.nnapiDelegate);
                     options.setNumThreads(NUM_THREADS);
                     options.setUseNNAPI(true);
+                    options.setUseXNNPACK(true);
+                    options.addDelegate(this.nnapiDelegate);
                 }
             }
             if (isGPU) {
                 Log.d("Yolov8Classifier", "++++++++++++++++++++++++++++++create: Trying to create GPU Delegate +++++++++++++++++++++++++++++++++++++++++");
                 GpuDelegate.Options delegateOptions = compatList.getBestOptionsForThisDevice();
-                delegateOptions.setInferencePreference(GpuDelegate.Options.INFERENCE_PREFERENCE_SUSTAINED_SPEED);
+                delegateOptions.setInferencePreference(GpuDelegate.Options.INFERENCE_PREFERENCE_FAST_SINGLE_ANSWER);
                 delegateOptions.setQuantizedModelsAllowed(true);
                 this.gpuDelegate = new GpuDelegate(delegateOptions);
                 options.addDelegate(this.gpuDelegate);
@@ -104,7 +103,6 @@ public class Yolov8Classfier {
     public void useNNAPI(boolean isNNAPI) {
         this.isNNAPI = isNNAPI;
     }
-
     public void useGPU(boolean isGPU) {
         this.isGPU = isGPU;
     }
@@ -158,20 +156,24 @@ public class Yolov8Classfier {
         }
         return Math.round(lastFPS * 100.0) / 100.0f;
     }
-    public List<DetectedItem> detect(Bitmap bitmap){
-
-        List<DetectedItem> detectedItems = null;
+    public List<BoundingBox> detect(Bitmap bitmap){
+        this.bitmap = bitmap;
+        List<BoundingBox> detectedItems = null;
         if (labelFilename !=null && this.tfLite != null) {
             YoloDetect yolodetect = new YoloDetect(this.tfLite, Utils.readLabels(assetManager, labelFilename),inputSize,this);
             if (frameCount == 0) {
-                // Start the FPS counter only once when the detection starts
                 startFPSCounter();
             }
             //yolodetect.debug();
-            //yolodetect.detect(Utils.processBitmap(bitmap, inputSize));
+            //detectedItems = yolodetect.detect(Utils.processBitmap(bitmap, inputSize));
             detectedItems = yolodetect.detect(Utils.img_process(bitmap, inputSize));
             incrementFrameCount();
-            return detectedItems;
+            if(detectedItems != null){
+                return detectedItems;
+            }else{
+                Log.d("Yolov8Classfier", "detect: detectedItems is null");
+                throw new NullPointerException("detectedItems is null in Yolov8Classfier.detect(Bitmap bitmap) method");
+            }
         }else{
             if (labelFilename == null) {
                 Log.d("Yolov8Classfier", "detect: labelFilename is null");

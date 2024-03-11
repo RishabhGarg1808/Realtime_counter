@@ -4,24 +4,25 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.view.TextureView
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.objcounter.CameraHandler
-
+import com.example.realtimeobjectcounter.utils.Rectangle_ImgView
 
 import com.example.tensorflow_yolov8.Yolov8Classfier
 import org.tensorflow.lite.support.image.TensorImage
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var canvas: Canvas
 
     val yolov8 = Yolov8Classfier()
     override fun onDestroy() {
@@ -29,29 +30,35 @@ class MainActivity : AppCompatActivity() {
         yolov8.close()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-
         if(checkPermission()){
-
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_main)
 
             val assetManager: AssetManager = this.assets
 
-            yolov8.setNUM_THREADS(8)
+            yolov8.setNUM_THREADS(32)
             yolov8.useGPU(true)
             yolov8.useNNAPI(true)
-            yolov8.setQuantized(false)
-            yolov8.create(assetManager, "ssd.tflite", "labels.txt",
-                300, 8)
+            yolov8.setQuantized(true)
+            yolov8.create(assetManager, "yolov8n_int8.tflite", "labels.txt",
+                384, 32)
 
             var bitmap : Bitmap
             var image : TensorImage;
             val texView = findViewById<TextureView>(R.id.textureView)
-            var imgView = findViewById<ImageView>(R.id.imageView)
+            val imgview : Rectangle_ImgView = findViewById(R.id.imageView)
             val button = findViewById<android.widget.Button>(R.id.button)
 
+
+            //val bitmap_imgView = Bitmap.createBitmap(imgView.width, imgView.height, Bitmap.Config.ARGB_8888)
+            //canvas = Canvas(bitmap_imgView)
+//            val paint = Paint()
+//            paint.color = Color.RED
+//            paint.style = Paint.Style.STROKE
+            //paint.strokeWidth = 100f
+
             val cameraManager: CameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val cameraHandler = CameraHandler(1,cameraManager, texView)
+            val cameraHandler = CameraHandler(0,cameraManager, texView)
             cameraHandler.openCamera()
 
             val workerThread = HandlerThread("workerThread").apply { start() }
@@ -81,15 +88,14 @@ class MainActivity : AppCompatActivity() {
 
                 override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
                     workerHandler.post {
-                    bitmap = texView.bitmap!!
-                    val detectedItems = yolov8.detect(bitmap)
-                        for (item in detectedItems) {
-                            Log.d("DetectedItem", "Label: ${item.label}, Score: ${item.confidence}, BoundingBox: ${item.location}")
+                       bitmap = texView.bitmap!!
+                       val Bbox : MutableList<com.example.tensorflow_yolov8.Utils.BoundingBox>? = yolov8.detect(bitmap)
+                        runOnUiThread {
+                            button.setText("FPS : ${yolov8.getFPS()}")
+                            imgview.setRectangles(Bbox as List<com.example.tensorflow_yolov8.Utils.BoundingBox>)
                         }
                 }
-                    runOnUiThread {
-                    button.setText("FPS : ${yolov8.getFPS()}")
-                    }
+
                 }
 
             }

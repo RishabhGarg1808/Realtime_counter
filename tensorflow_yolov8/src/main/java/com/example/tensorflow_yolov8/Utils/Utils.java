@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.common.ops.NormalizeOp;
 import org.tensorflow.lite.support.image.ColorSpaceType;
 import org.tensorflow.lite.support.image.ImageProcessor;
 import org.tensorflow.lite.support.image.TensorImage;
@@ -57,10 +58,11 @@ public class Utils {
     }
 
     public static TensorImage img_process(Bitmap bitmap, int size){
-        TensorImage image = new TensorImage(DataType.UINT8);
+        TensorImage image = new TensorImage(DataType.FLOAT32);
         image.load(bitmap);
         ImageProcessor imageProcessor = new ImageProcessor.Builder()
                 .add(new ResizeOp(size, size, ResizeOp.ResizeMethod.NEAREST_NEIGHBOR))
+                .add(new NormalizeOp(0,255))
                 .build();
         image = imageProcessor.process(image);
         return image;
