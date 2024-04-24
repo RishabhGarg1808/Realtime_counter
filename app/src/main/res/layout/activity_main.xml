@@ -10,9 +10,10 @@
         android:id="@+id/linearLayout_above"
         android:layout_width="match_parent"
         android:layout_height="85dp"
+        android:background="@color/white"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,8 +24,41 @@
             android:background="@drawable/rounded_border"
             app:layout_constraintBottom_toBottomOf="@+id/linearLayout_above"
             app:layout_constraintEnd_toEndOf="@+id/linearLayout_above"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout_above" />
+            app:layout_constraintTop_toTopOf="@+id/linearLayout_above"
+            app:layout_constraintVertical_bias="0.594" />
+
+        <ImageButton
+            android:id="@+id/button5"
+            android:layout_width="54dp"
+            android:layout_height="47dp"
+            android:background="@color/white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_settings_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.535"
+            app:layout_constraintStart_toEndOf="@+id/button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.605" />
+
+        <ImageButton
+            android:id="@+id/button6"
+            android:layout_width="54dp"
+            android:layout_height="47dp"
+            android:background="@color/white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_flash_on_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button"
+            app:layout_constraintHorizontal_bias="0.317"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.578" />
+
+        =
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -33,42 +67,47 @@
         android:layout_width="match_parent"
         android:layout_height="119dp"
         android:orientation="horizontal"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"><![CDATA[
 
-        <Button
+        ""
+            tools:layout_editor_absoluteX="317dp"
+            tools:layout_editor_absoluteY="29dp" />
+
+
+
+
+
+        ]]>
+
+        <ImageButton
             android:id="@+id/button1"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/rounded_border"
-            android:text="S"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@color/white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_add_photo_alternate_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.765"
             app:layout_constraintStart_toEndOf="@+id/button3"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button3"
             android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@drawable/rounded_border"
-            android:text="Go"
+            android:layout_height="65dp"
+            android:background="@color/white"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_camera_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/rounded_border"
-            android:text="F"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
@@ -109,7 +148,7 @@
         <com.example.realtimeobjectcounter.utils.Rectangle_ImgView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="531dp"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
