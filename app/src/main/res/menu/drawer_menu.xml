@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/threshold_text"
+        android:title="IOU Threshold"/>
+
+    <item android:id="@+id/threshold_slider"
+        app:actionLayout="@layout/slider_layout"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/confidance_text"
+        android:title="ConfidanceThreshold"/>
+
+    <item android:id="@+id/confidence_slider"
+        app:actionLayout="@layout/slider_layout"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/INFO_HASH"
+        android:title="======INFO_HASH======" />
+    <item android:id="@+id/gpu"
+        android:title="GPU : "/>
+    <item android:id="@+id/nnapi"
+        android:title="NNAPI : "/>
+    <item android:id="@+id/quantized"
+        android:title="QUANT : "/>
+    <item android:id="@+id/threads"
+        android:title="Threads : "/>
+</menu>

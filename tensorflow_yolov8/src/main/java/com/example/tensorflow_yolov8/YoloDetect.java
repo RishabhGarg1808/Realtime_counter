@@ -57,6 +57,8 @@ public class YoloDetect {
         this.labels = labels;
         this.size = size;
         this.INPUT_SIZE = size;
+        this.CONFIDENCE_THRESHOLD = d.CONFIDENCE_THRESHOLD;
+        this.IOU_THRESHOLD = d.IOU_THRESHOLD;
 
         intValues = new int[size * size];
         this.imgData = ByteBuffer.allocateDirect(this.INPUT_SIZE * this.INPUT_SIZE * 3 * d.numBytesPerChannel);
@@ -107,6 +109,7 @@ public class YoloDetect {
         tfLite.run(image.getBuffer(), Array_def);
         return getPredictions(Array_def);
     }
+
     public void get_input_shape(){
         int[] inputShape = tfLite.getInputTensor(0).shape();
         Log.d("YoloDetect", "Input shape: " + Arrays.toString(inputShape));

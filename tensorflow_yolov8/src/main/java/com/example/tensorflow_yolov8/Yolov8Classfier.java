@@ -19,10 +19,10 @@ import java.util.List;
 
 public class Yolov8Classfier {
      CompatibilityList compatList = new CompatibilityList();
-     boolean isNNAPI = false;
-     boolean isGPU = false;
-     boolean isQuantized = false;
-     int NUM_THREADS = 8;
+     public boolean isNNAPI = false;
+     public boolean isGPU = false;
+     public boolean isQuantized = false;
+     public int NUM_THREADS = 8;
      AssetManager assetManager = null;
      String modelFilename ;
      String labelFilename = "labels.txt";
@@ -42,6 +42,8 @@ public class Yolov8Classfier {
     int oup_zero_point;
     int numBytesPerChannel ;
     Bitmap bitmap;
+    float CONFIDENCE_THRESHOLD = 0.75f;
+    float IOU_THRESHOLD =0.75f;
 
     public Yolov8Classfier() {
     }
@@ -112,6 +114,8 @@ public class Yolov8Classfier {
     public boolean isQuantized() {
         return isQuantized;
     }
+    public void setCONFIDENCE_THRESHOLD(float CONFIDENCE_THRESHOLD) {this.CONFIDENCE_THRESHOLD = CONFIDENCE_THRESHOLD;}
+    public void setIOU_THRESHOLD(float IOU_THRESHOLD) {this.IOU_THRESHOLD = IOU_THRESHOLD;}
 
     public void setNUM_THREADS(int NUM_THREADS) {
         this.NUM_THREADS = NUM_THREADS;

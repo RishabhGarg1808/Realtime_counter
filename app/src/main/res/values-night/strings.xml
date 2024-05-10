@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Realtime Object Counter</string>
     <string name="open" />
     <string name="close" />
 </resources>
