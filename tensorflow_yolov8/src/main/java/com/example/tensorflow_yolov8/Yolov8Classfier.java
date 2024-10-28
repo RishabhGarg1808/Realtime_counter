@@ -58,11 +58,14 @@ public class Yolov8Classfier {
             Interpreter.Options options = (new Interpreter.Options());
             //options.setNumThreads(NUM_THREADS);
             if (isNNAPI) {
+                Log.d("Yolov8Classifier", "++++++++++++++++++++++++++++++create: Trying to create NNAPI Delegate +++++++++++++++++++++++++++++++++++++++++");
                 this.nnapiDelegate = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
                     this.nnapiDelegate = new NnApiDelegate();
+
                     options.setNumThreads(NUM_THREADS);
                     options.setUseNNAPI(true);
+                    options.setAllowBufferHandleOutput(true);
                     options.setUseXNNPACK(true);
                     options.addDelegate(this.nnapiDelegate);
                 }
@@ -84,7 +87,7 @@ public class Yolov8Classfier {
             if(this.tfLite == null){
                 Log.d("Yolov8Classifier", "create: tfLite is null");
             }
-        } catch (Exception e) {
+        } catch (Exception e){
             throw new RuntimeException(e);
         }
 

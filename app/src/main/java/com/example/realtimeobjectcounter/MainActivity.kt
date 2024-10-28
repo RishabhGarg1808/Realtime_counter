@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             val numThreads: Int = 8
             yolov8.setNUM_THREADS(numThreads)
             yolov8.useGPU(true)
-            yolov8.useNNAPI(true)
+            yolov8.useNNAPI(false)
             yolov8.setQuantized(true)
             yolov8.create(assetManager, "yolov8n_int8.tflite", "labels.txt",
                 384, numThreads)
