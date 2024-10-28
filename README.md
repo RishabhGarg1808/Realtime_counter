@@ -1,4 +1,3 @@
-```markdown
 # Real-Time Object Counter
 
 This project is a real-time object counter application using TensorFlow Lite and YOLOv8. It leverages NNAPI and GPU delegates for optimized performance on supported devices.
@@ -79,5 +78,5 @@ You can configure the following parameters in the `Yolov8Classifier` class:
 
 ## License
 
-This project is licensed under the GNU GPL v3 License.
+This project is licensed under the  License.
 ```
