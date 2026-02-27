@@ -78,5 +78,5 @@ You can configure the following parameters in the `Yolov8Classifier` class:
 
 ## License
 
-This project is licensed under the  License.
+This project is licensed under the License Apache.
 ```
